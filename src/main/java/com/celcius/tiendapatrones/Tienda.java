@@ -27,9 +27,9 @@ public class Tienda {
                 quantity = userInput.nextInt();
             }
 
-            if(verifyIfStock(id, quantity)){
+            if(database.verifyIfStock(id, quantity)){
                 CarritoCompras carrito = new CarritoCompras();
-                carrito.añadirProducto(getTheProduct(id), quantity);
+                carrito.añadirProducto(database.getTheProduct(id), quantity);
 
                 database.removeQuantityFromStock(id, quantity);
             }
@@ -38,38 +38,6 @@ public class Tienda {
         venta.calculateTotalPrice();
     }
 
-    static Producto getTheProduct(int id){
-        Producto producto = null;
-        for(JSONObject data: database.getProducts()){
-            if(data.getInt("id") == id){
-                if(data.getString("SKU").equals("EA")){
-                    producto = new Producto(TipoProducto.EA, data.getString("name"), data.getString("description"), data.getInt("quantity"), data.getDouble("price"), data.getInt("id"));
-                }else if(data.getString("SKU").equals("WE")){
-                    producto = new Producto(TipoProducto.WE, data.getString("name"), data.getString("description"), data.getInt("quantity"), data.getDouble("price"), data.getInt("id"));
-                }else if (data.getString("SKU").equals("SP")){
-                    producto = new Producto(TipoProducto.SP, data.getString("name"), data.getString("description"), data.getInt("quantity"), data.getDouble("price"), data.getInt("id"));
-                }
-            }
-        }
-        return producto;
-    }
-
-    static boolean verifyIfStock(int id, int quantity){
-        for(JSONObject data: database.getProducts()){
-            if(data.getInt("id") == id){
-                if(data.getInt("quantity") >= quantity){
-                    return true;
-                }else{
-                    System.out.println("No hay la cantidad en stock");
-                }
-            }
-        }
-        return false;
-    }
-
-    public static void setDatabase(DatabaseManager database) {
-        Tienda.database = database;
-    }
 
     public static HashMap<Producto, Integer> getShoppingCart() {
         return shoppingCart;
